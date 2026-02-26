@@ -9,7 +9,12 @@ const pathAPI = {
     dossier: {
         fetchAll: 'dossier/fetchall',
         get: 'dossier/get',
-        getparbl: 'dossier/getparbl'
+        getparbl: 'dossier/getparbl',
+        fetchYear: 'dossier/fetchyear',
+    },
+    bl: {
+        fetchByClientID: 'dossier/fetchbyclientid',
+        fetchdeclaration : 'dossier/fetchdeclarationbyclientid'
     },
     navirebl: {
         fetchAll: 'navirebl/fetchall'

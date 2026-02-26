@@ -9,6 +9,8 @@ import pathAPI from "../utils/pathAPI/pathAPI.js";
 import debounce from "lodash/debounce";
 import {useI18n} from 'vue-i18n';
 import localstorageService from "@/utils/localstorageService.js";
+import CompontantYear from "@/components/CompontantYear.vue";
+
 const {t} = useI18n();
 
 const totalItems = ref(0);
@@ -16,6 +18,8 @@ const search = ref('');
 const isModalVisible = ref(false);
 const selectedCardNavire = ref(null);
 const activeFilter = ref('');
+const listAnnee = ref([]);
+const refModalYear = ref();
 
 
 const filtre = ref({
@@ -27,6 +31,7 @@ const filtre = ref({
     per_page: '15',
     client_id: localstorageService.getIDclient(),
     filtre_etat: '',
+    year : ''
 })
 const navires = ref([
     {
@@ -46,19 +51,21 @@ const navires = ref([
 ]);
 
 const suivie_dossier = ref(null);
+const selectedYear = ref(null);
+const showYear = ref(true);
 
 async function handleCardClick(ouverture_bl_numero) {
 
     try {
         var formulaire = new FormData();
-        formulaire.append('numero_bl',ouverture_bl_numero);
+        formulaire.append('numero_bl', ouverture_bl_numero);
 
         const response = await axiosInstance.post(pathAPI.dossier.getparbl, formulaire);
         suivie_dossier.value = response.data[0];
         selectedCardNavire.value = ouverture_bl_numero;
-    }catch (e) {
+    } catch (e) {
         console.log(e)
-    }finally {
+    } finally {
 
     }
     isModalVisible.value = true;
@@ -69,16 +76,32 @@ function handleModalClose() {
     selectedCardNavire.value = null;
 }
 
-const fetchData= async () => {
-        try {
-            const response = await axiosInstance.get(pathAPI.dossier.fetchAll, {params: filtre.value});
-            navires.value = response.data.data
-            totalItems.value = response.data.total;
-        }catch (e) {
-            console.log(e)
-        }finally {
+const fetchYear = ()=> {
+    axiosInstance.get(pathAPI.dossier.fetchYear, {params: {client_id: localstorageService.getIDclient()}})
+        .then(response => {
+            listAnnee.value = response.data;
+        })
+        .catch(error => {
+            console.error('Erreur lors de la récupération des années :', error);
+        });
+}
 
-        }
+const changeYear = (year) => {
+    selectedYear.value = year;
+    filtre.value.year = year;
+    fetchData();
+}
+
+const fetchData = async () => {
+    try {
+        const response = await axiosInstance.get(pathAPI.dossier.fetchAll, {params: filtre.value});
+        navires.value = response.data.data
+        totalItems.value = response.data.total;
+    } catch (e) {
+        console.log(e)
+    } finally {
+
+    }
 }
 
 const filterByEtat = (etat) => {
@@ -93,8 +116,13 @@ const handlePageChange = (page) => {
     fetchData();
 };
 
-onMounted( () => {
+const openFilter = ()=> {
+    refModalYear.value.openModal();
+}
+
+onMounted(() => {
     fetchData();
+    fetchYear();
 })
 
 </script>
@@ -118,7 +146,7 @@ onMounted( () => {
                     activeFilter === '' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-gray-300 hover:bg-gray-400 text-black',
                     'rounded-lg shadow-md'
                      ]">
-                        {{t('filtre.tout')}}
+                    {{ t('filtre.tout') }}
                 </a-button>
 
                 <!-- Bouton En cours -->
@@ -129,7 +157,7 @@ onMounted( () => {
                     activeFilter === 0 ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-gray-300 hover:bg-gray-400 text-black',
                     'rounded-lg shadow-md'
                     ]">
-                    {{t('filtre.en_cours')}}
+                    {{ t('filtre.en_cours') }}
                 </a-button>
 
                 <!-- Bouton Clôturer -->
@@ -137,10 +165,17 @@ onMounted( () => {
                     type="default"
                     @click="filterByEtat(1)"
                     :class="[
-        activeFilter === 1 ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-gray-300 hover:bg-gray-400 text-black',
-        'rounded-lg shadow-md'
-      ]">
-                    {{t('filtre.cloturer')}}
+                    activeFilter === 1 ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-gray-300 hover:bg-gray-400 text-black',
+                    'rounded-lg shadow-md'
+                  ]">
+                    {{ t('filtre.cloturer') }}
+                </a-button>
+
+                <a-button
+                    class="ml-auto rounded-lg shadow-md bg-primary hover:bg-primary-dark hover:!text-white text-white"
+                    type="default"
+                    @click="openFilter">
+                    <font-awesome-icon icon="fa-solid fa-filter" class="text-base"/>
                 </a-button>
             </div>
 
@@ -173,6 +208,14 @@ onMounted( () => {
                 :navire="selectedCardNavire"
                 :Ouverture="suivie_dossier"
                 @close="handleModalClose"
+            />
+
+            <CompontantYear
+                ref="refModalYear"
+                :year="listAnnee"
+                :active-year="selectedYear"
+                @select-year="changeYear"
+
             />
         </a-layout-content>
     </a-layout>

@@ -6,6 +6,8 @@ import axiosInstance from "@/config/AxiosInstance.js";
 import pathAPI from "@/utils/pathAPI/pathAPI.js";
 import toast from "@/utils/toast.js";
 import localstorageService from "@/utils/localstorageService.js";
+import AutocompleteComponent from "@/components/AutoCompleteComponent/AutocompleteComponent.vue";
+import debounce from "lodash/debounce.js";
 
 const {t} = useI18n();
 const props = defineProps({
@@ -41,6 +43,9 @@ const props = defineProps({
 
 const entrepots = ref([]);
 const navires = ref([]);
+const listBL = ref([]);
+const listDeclaration = ref([]);
+
 
 const fetchEntrepot = async ()=> {
     const response = await  axiosInstance.get(pathAPI.tableaubord.entrepot, {params: {id_client: localstorageService.getIDclient()}});
@@ -51,6 +56,21 @@ const fetchNavire = async ()=> {
     const response = await axiosInstance.get(pathAPI.tableaubord.navire, {params: {id_client: localstorageService.getIDclient()}});
     navires.value = response.data;
 }
+
+const fetchBL = async () => {
+    const response = await axiosInstance.get(pathAPI.bl.fetchByClientID, {params: {id_client: localstorageService.getIDclient() , ouverture_num_bl: filters.value.bill_of_lading}});
+    listBL.value = response.data;
+}
+
+const fetchDeclration = async () => {
+    const response = await axiosInstance.get(pathAPI.bl.fetchdeclaration, {params: {id_client: localstorageService.getIDclient() , declaration_bl: filters.value.num_declration}});
+    listDeclaration.value = response.data;
+}
+
+const findBLNumero = debounce(fetchBL, 300);
+const findDeclaration = debounce(fetchDeclration, 300);
+
+
 
 const filters = ref({
     fromDate: new Date().toISOString().split('T')[0],
@@ -83,6 +103,8 @@ const onFilter = async () => {
 onMounted(() => {
     fetchEntrepot();
     fetchNavire();
+    fetchBL();
+    fetchDeclration();
 })
 
 </script>
@@ -114,7 +136,7 @@ onMounted(() => {
 
             <a-form-item class="flex flex-col">
                 <label class="font-medium mb-1">{{t('tableau_bord.bol')}}</label>
-                <a-input
+<!--                <a-input
                     size="large"
                     type="default"
                     v-model:value="filters.bill_of_lading"
@@ -122,12 +144,33 @@ onMounted(() => {
                     class="px-5 w-full text-center"
                 >
 
-                </a-input>
+                </a-input>-->
+<!--                <AutocompleteComponent v-model="form.marque"
+                                       :options="localMarqueVehicule"
+                                       placeholder="Choisissez une marque"
+                />-->
+                <AutocompleteComponent :options="listBL" v-model:value="filters.bill_of_lading"
+                                       :fieldConfig="{
+                                                label: 'ouverture_bl_numero',
+                                                value: 'ouverture_bl_numero',
+                                                search: 'ouverture_bl_numero'
+                                            }"
+                                       @input="findBLNumero"
+                />
             </a-form-item>
 
             <a-form-item class="flex flex-col">
                 <label class="font-medium mb-1">{{t('tableau_bord.num_declration')}}</label>
-                <a-input
+
+                <AutocompleteComponent :options="listDeclaration" v-model:value="filters.num_declration"
+                                       :fieldConfig="{
+                                                label: 'declaration_bl',
+                                                value: 'declaration_bl',
+                                                search: 'declaration_bl'
+                                            }"
+                                       @input="findDeclaration"
+                />
+<!--                <a-input
                     size="large"
                     type="default"
                     v-model:value="filters.num_declration"
@@ -135,7 +178,7 @@ onMounted(() => {
                     class="px-5 w-full text-center"
                 >
 
-                </a-input>
+                </a-input>-->
             </a-form-item>
 
             <!-- Sélection "Choix navire" -->
