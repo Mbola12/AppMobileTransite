@@ -1,8 +1,6 @@
 {
   "menu": {
     "deconnexion": "Déconnexion",
-    "langue_fr": "Français",
-    "langue_en": "Anglais",
     "menu_application": "Menu de l'application",
     "texte_menu" : "Accédez rapidement à toutes vos applications et fonctionnalités pour une gestion efficace de vos projets",
     "dossier": "Dossier",
@@ -10,7 +8,8 @@
     "suivie": "suivie",
     "scan_qr": "Scan QR",
     "user": "Utilisateur",
-    "tableau_bord": "Tableau de Bord"
+    "tableau_bord": "Tableau de Bord",
+    "a_propos": "À propos"
   },
   "filtre": {
     "search": "Recherche",

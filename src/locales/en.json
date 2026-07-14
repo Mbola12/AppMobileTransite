@@ -1,8 +1,6 @@
 {
   "menu": {
     "deconnexion": "Logout",
-    "langue_fr": "French",
-    "langue_en": "English",
     "menu_application": "Application Menu",
     "texte_menu": "Quickly access all your apps and features for efficient project management",
     "dossier": "Folder",
@@ -10,7 +8,8 @@
     "suivie": "Tracking",
     "scan_qr": "Scan QR",
     "user": "User",
-    "tableau_bord": "Dashboard"
+    "tableau_bord": "Dashboard",
+    "a_propos": "About"
   },
   "filtre": {
     "search": "Search",

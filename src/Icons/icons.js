@@ -22,7 +22,8 @@ import {
     faTrash,
     faCheck,
     faTableColumns,
-    faFilter
+    faFilter,
+    faCircleInfo
 } from "@fortawesome/free-solid-svg-icons";
 
 import {} from '@fortawesome/free-brands-svg-icons';
@@ -51,5 +52,6 @@ library.add(
     faTrash,
     faCheck,
     faTableColumns,
-    faFilter
+    faFilter,
+    faCircleInfo
 );

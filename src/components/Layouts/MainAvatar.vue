@@ -1,33 +1,44 @@
 <template>
-    <a-dropdown
-        trigger="click"
-        placement="bottomRight"
-    >
-        <!-- Avatar cliquable -->
-        <a-avatar
-            :size="40"
-            class="bg-white text-zinc-900 cursor-pointer"
+    <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Bouton A propos : mis en avant à gauche, animé pour inciter au clic -->
+        <a
+            :href="A_PROPOS_URL"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="relative flex items-center gap-1.5 h-9 px-3 sm:px-4 rounded-full bg-white text-primary text-xs sm:text-sm font-semibold shadow-md animate-glow-pulse hover:shadow-lg hover:scale-105 hover:brightness-95 active:scale-95 transition-all cursor-pointer whitespace-nowrap"
         >
-            <font-awesome-icon class="" icon="fa-solid fa-cog"/>
-        </a-avatar>
+            <span class="absolute -top-1 -right-1 flex h-3 w-3">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow opacity-75"></span>
+                <span class="relative inline-flex h-3 w-3 rounded-full bg-yellow"></span>
+            </span>
+            <font-awesome-icon icon="fa-solid fa-circle-info" class="animate-bounce"/>
+            <span>{{ t('menu.a_propos') }}</span>
+        </a>
 
-        <!-- Menu déroulant -->
-        <template #overlay>
-            <a-menu class="w-[210px] !text-gray-800">
-                <a-menu-item key="profile" class="text-sm !text-gray-800"  @click="changeLangue('fr')">
-                      <span>
-                        {{ t('menu.langue_fr') }}
-                      </span>
-                </a-menu-item>
-                <a-menu-item key="logout" class="text-sm !text-gray-800" @click="changeLangue('en')">
-                      <span >
-                        {{ t('menu.langue_en') }}
-                      </span>
-                </a-menu-item>
+        <!-- Séparation -->
+        <a-divider type="vertical" class="!h-6 !border-white/40 !mx-0"/>
 
-            </a-menu>
-        </template>
-    </a-dropdown>
+        <!-- Choix de la langue -->
+        <div class="flex items-center gap-1.5 text-xs sm:text-sm font-medium select-none">
+            <span
+                class="cursor-pointer transition-colors"
+                :class="currentLang === 'fr' ? 'text-white font-semibold' : 'text-white/60 hover:text-white'"
+                @click="changeLangue('fr')"
+            >
+                FR
+            </span>
+
+            <span class="text-white/40">|</span>
+
+            <span
+                class="cursor-pointer transition-colors"
+                :class="currentLang === 'en' ? 'text-white font-semibold' : 'text-white/60 hover:text-white'"
+                @click="changeLangue('en')"
+            >
+                EN
+            </span>
+        </div>
+    </div>
 </template>
 
 <script setup>
@@ -38,16 +49,7 @@ import {useI18n} from 'vue-i18n';
 const {t, locale} = useI18n();
 const currentLang = ref(locale.value);
 
-
-const user = {
-    name: "John Doe",
-    email: "john.doe@example.com",
-};
-
-// Fonction de navigation
-const navigateTo = (url) => {
-    window.location.href = url;
-};
+const A_PROPOS_URL = 'https://transmaki.mg/';
 
 const changeLangue = (lang) => {
     locale.value = lang;

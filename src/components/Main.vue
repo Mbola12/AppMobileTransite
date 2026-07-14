@@ -18,7 +18,7 @@ const logOut = () => {
         <a-layout-content class="relative w-full h-screen max-w-screen-sm mx-auto my-auto">
             <div
                 class=" text-white text-left p-8 bg-gradient-to-r from-primary to-secondary shadow-md rounded-b-[40px]">
-                <div class="flex items-center justify-between w-full mb-8">
+                <div class="flex flex-wrap items-center justify-between gap-y-2 w-full mb-8">
                     <a-tooltip :title="t('menu.deconnexion')">
                         <a-button @click="logOut" shape="circle" size="large">
                             <font-awesome-icon icon="fa-solid fa-sign-out-alt" class="!me-0"/>
