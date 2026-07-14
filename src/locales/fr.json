@@ -28,13 +28,19 @@
     "date_arrivee": "Date Arrivée",
     "date_creation": "Date Création",
     "nbre_conteneur": "Nbre Conteneur",
-    "numero_declration": "N° Déclration"
+    "numero_declration": "N° Déclration",
+    "numero_facture": "N° Facture",
+    "poids": "Poids",
+    "type_container": "Type"
   },
   "dossier_detail": {
     "list_document": "Liste des documents",
     "telecharger_tout": "Téléchargez tous les fichiers au format ZIP",
     "telecharger": "Télécharger",
-    "suivie_document": "Suivie des documents"
+    "suivie_document": "Suivie des documents",
+    "colonne_document": "Document",
+    "colonne_statut": "Statut",
+    "colonne_date": "Date"
   },
   "navire": {
     "list_navire": "Liste Navire",
@@ -109,6 +115,9 @@
     "qte_sortie": "Qte Sortie",
     "nbre_sac": "Nbre Sac",
     "nbre_bb": "Nbre BB",
-    "qte_restant": "Qte Restant"
+    "qte_restant": "Qte Restant",
+    "statut_cloture": "Clôturé",
+    "statut_en_cours": "En cours",
+    "statut_non_cloture": "Non clôturé"
   }
 }

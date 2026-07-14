@@ -34,7 +34,7 @@ const goBack = () => {
 };
 
 const MenuClick = ({key}) => {
-    router.push({name: key});
+    router.push({name: key, query: {type: props.type}});
 };
 </script>
 

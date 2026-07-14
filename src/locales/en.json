@@ -28,12 +28,18 @@
     "date_arrivee": "Arrival Date",
     "date_creation": "Creation Date",
     "nbre_conteneur": "No.Containers",
-    "numero_declration": "Declaration"
+    "numero_declration": "Declaration",
+    "numero_facture": "Invoice No.",
+    "poids": "Weight",
+    "type_container": "Type"
   },
   "dossier_detail": {
     "list_document": "List of Documents",
     "telecharger_tout": "Download all files as ZIP",
     "telecharger": "Download",
+    "colonne_document": "Document",
+    "colonne_statut": "Status",
+    "colonne_date": "Date",
     "suivie_document": "Document Tracking"
   },
   "navire": {
@@ -109,6 +115,9 @@
     "qte_sortie": "Released Qty",
     "nbre_sac": "Number of Bags",
     "nbre_bb": "Number of Big Bags",
-    "qte_restant": "Remaining Qty"
+    "qte_restant": "Remaining Qty",
+    "statut_cloture": "Closed",
+    "statut_en_cours": "In Progress",
+    "statut_non_cloture": "Not Closed"
   }
 }

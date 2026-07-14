@@ -1,6 +1,7 @@
 <script setup>
 import ButtonRetour from "../components/ButtonRetour.vue";
-import {ref, onMounted} from "vue"
+import {ref, computed, onMounted} from "vue"
+import {useRoute} from 'vue-router';
 import axiosInstance from "../config/AxiosInstance.js";
 import pathAPI from "../utils/pathAPI/pathAPI.js";
 import toast from "../utils/toast.js";
@@ -11,7 +12,12 @@ import { Modal } from 'ant-design-vue';
 import {useI18n} from 'vue-i18n';
 import localstorageService from "@/utils/localstorageService.js";
 import FilterDashboard from "@/components/Modal/FilterDashboard.vue";
+import CardDossier from "@/components/Card/CardDossier.vue";
+import DossierDetailsModal from "@/components/Modal/DossierDetailsModal.vue";
 const {t} = useI18n();
+
+const route = useRoute();
+const isContainer = computed(() => route.query.type === 'container');
 
 const totalItems = ref(0);
 const is_open = ref(false);
@@ -70,8 +76,104 @@ const handlePageChange = (page) => {
     fetchData();
 };
 
+// --- Tableau de bord Container (Suivi des BL) ---
+const currentYear = new Date().getFullYear();
+const filtreContainer = ref({
+    date_debut: `01/01/${currentYear}`,
+    date_fin: `31/12/${currentYear}`,
+    search: '',
+});
+const dossiersContainer = ref([]);
+const containerPage = ref(1);
+const containerTotalItems = ref(0);
+const containerPerPage = 25;
+const statutFiltre = ref(['en_cours', 'non_cloture']);
+const statutLegende = computed(() => [
+    {value: 'cloture', label: t('tableau_bord.statut_cloture'), colorClass: 'statut-cloture'},
+    {value: 'en_cours', label: t('tableau_bord.statut_en_cours'), colorClass: 'statut-en-cours'},
+    {value: 'non_cloture', label: t('tableau_bord.statut_non_cloture'), colorClass: 'statut-non-cloture'},
+]);
+
+const selectedContainerBL = ref(null);
+const isContainerModalVisible = ref(false);
+const containerDossierDetail = ref(null);
+
+const fetchContainerDossiers = async () => {
+    const formulaire = new FormData();
+    formulaire.append('date_debut', filtreContainer.value.date_debut);
+    formulaire.append('date_fin', filtreContainer.value.date_fin);
+    formulaire.append('search', filtreContainer.value.search);
+    formulaire.append('type_filtre', 'ouverture_bl_numero');
+    formulaire.append('client_id', localstorageService.getIDclient());
+    formulaire.append('page', containerPage.value);
+    formulaire.append('per_page', containerPerPage);
+    statutFiltre.value.forEach(statut => formulaire.append('statuts[]', statut));
+
+    const response = await axiosInstance.post(pathAPI.dossier.dashboardsuiviebl, formulaire);
+    dossiersContainer.value = response.data.data;
+    containerTotalItems.value = response.data.total;
+    containerPage.value = response.data.current_page;
+};
+
+const debouncedFetchContainer = debounce(() => {
+    containerPage.value = 1;
+    fetchContainerDossiers();
+}, 300);
+
+const toggleStatutFiltre = (statut) => {
+    const index = statutFiltre.value.indexOf(statut);
+    if (index === -1) {
+        statutFiltre.value.push(statut);
+    } else {
+        statutFiltre.value.splice(index, 1);
+    }
+    containerPage.value = 1;
+    fetchContainerDossiers();
+};
+
+const setContainerFilter = () => {
+    containerPage.value = 1;
+    fetchContainerDossiers();
+};
+
+const resetContainerFilter = () => {
+    filtreContainer.value = {
+        date_debut: `01/01/${currentYear}`,
+        date_fin: `31/12/${currentYear}`,
+        search: '',
+    };
+    setContainerFilter();
+};
+
+const handleContainerPageChange = (page) => {
+    containerPage.value = page;
+    fetchContainerDossiers();
+};
+
+async function handleContainerCardClick(ouverture_bl_numero) {
+    try {
+        const formulaire = new FormData();
+        formulaire.append('numero_bl', ouverture_bl_numero);
+        const response = await axiosInstance.post(pathAPI.dossier.getparbl, formulaire);
+        containerDossierDetail.value = response.data[0];
+        selectedContainerBL.value = ouverture_bl_numero;
+    } catch (e) {
+        console.log(e);
+    }
+    isContainerModalVisible.value = true;
+}
+
+function closeContainerModal() {
+    isContainerModalVisible.value = false;
+    selectedContainerBL.value = null;
+}
+
 onMounted(() => {
-    fetchData();
+    if (isContainer.value) {
+        fetchContainerDossiers();
+    } else {
+        fetchData();
+    }
 })
 </script>
 
@@ -80,7 +182,85 @@ onMounted(() => {
 
         <ButtonRetour :title="t('tableau_bord.tableau_bord')"/>
 
-        <a-layout-content class="!p-6 max-w-screen-2xl bg-gray-100 mx-auto w-full rounded-t-3xl">
+        <a-layout-content v-if="isContainer" class="!p-6 max-w-screen-2xl bg-gray-100 mx-auto w-full rounded-t-3xl">
+            <div class="mb-4 flex flex-col gap-3">
+                <div class="flex gap-2">
+                    <a-date-picker
+                        v-model:value="filtreContainer.date_debut"
+                        format="DD/MM/YYYY"
+                        value-format="DD/MM/YYYY"
+                        :placeholder="t('tableau_bord.du')"
+                        class="w-1/2"
+                    />
+                    <a-date-picker
+                        v-model:value="filtreContainer.date_fin"
+                        format="DD/MM/YYYY"
+                        value-format="DD/MM/YYYY"
+                        :placeholder="t('tableau_bord.au')"
+                        class="w-1/2"
+                    />
+                </div>
+
+                <SearchBar v-model="filtreContainer.search" @input="debouncedFetchContainer"/>
+
+                <div class="flex gap-2">
+                    <a-button type="primary" class="!bg-secondary !border-secondary !text-white" @click="setContainerFilter">
+                        <font-awesome-icon icon="fa-solid fa-search" class="mr-2"/>
+                        {{t('tableau_bord.recherche')}}
+                    </a-button>
+                    <a-button @click="resetContainerFilter">
+                        <font-awesome-icon icon="fa-solid fa-filter" class="mr-2"/>
+                        {{t('tableau_bord.reset_filtre')}}
+                    </a-button>
+                </div>
+            </div>
+
+            <div class="statut-legend mb-4 flex flex-wrap gap-2">
+                <button
+                    type="button"
+                    v-for="statut in statutLegende"
+                    :key="statut.value"
+                    class="statut-chip"
+                    :class="[statut.colorClass, { 'statut-chip-inactive': statutFiltre.indexOf(statut.value) === -1 }]"
+                    @click="toggleStatutFiltre(statut.value)"
+                >
+                    {{ statut.label }}
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                <CardDossier
+                    v-for="dossier in dossiersContainer"
+                    :key="dossier.id"
+                    :statut="dossier.etat_dossier"
+                    :date="dossier.ouverture_date_arriver_formatted"
+                    :bl-numbers="dossier.ouverture_bl_numero"
+                    :nom-navire="dossier.ouverture_navire"
+                    :info_navire="dossier"
+                    @click="handleContainerCardClick(dossier.ouverture_bl_numero)"
+                />
+            </div>
+
+            <div class="text-center pt-4">
+                <a-pagination
+                    v-model:current="containerPage"
+                    :total="containerTotalItems"
+                    :pageSize="containerPerPage"
+                    @change="handleContainerPageChange"
+                    show-less-items
+                />
+            </div>
+
+            <DossierDetailsModal
+                v-if="selectedContainerBL"
+                :open="isContainerModalVisible"
+                :navire="selectedContainerBL"
+                :Ouverture="containerDossierDetail"
+                @close="closeContainerModal"
+            />
+        </a-layout-content>
+
+        <a-layout-content v-else class="!p-6 max-w-screen-2xl bg-gray-100 mx-auto w-full rounded-t-3xl">
             <div class="mb-6">
                 <SearchBar v-model="filtre.filter" @input="debouncedFetchNavire"/>
             </div>
@@ -179,7 +359,7 @@ onMounted(() => {
 
         </a-layout-content>
 
-        <FilterDashboard :titre="t('tableau_bord.filtrer_par')"
+        <FilterDashboard v-if="!isContainer" :titre="t('tableau_bord.filtrer_par')"
                          :open="is_open" @close="closeModal"
                          @onSearch="onSearch"
         >
@@ -194,4 +374,44 @@ onMounted(() => {
     width: 100%;
     margin: 0 auto;
 }
+
+/* --- Légende / filtre de statut (Tableau de bord Container) --- */
+.statut-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1.5px solid transparent;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.statut-chip-inactive {
+    opacity: 0.5;
+    background: white !important;
+    box-shadow: none;
+}
+
+.statut-cloture {
+    border-color: #a3e0b8;
+    color: #1e7b3a;
+}
+.statut-cloture:not(.statut-chip-inactive) { background: #def6e4; }
+
+.statut-en-cours {
+    border-color: #a9d4f7;
+    color: #17679e;
+}
+.statut-en-cours:not(.statut-chip-inactive) { background: rgba(42, 153, 241, 0.18); }
+
+.statut-non-cloture {
+    border-color: #ced4da;
+    color: #495057;
+}
+.statut-non-cloture:not(.statut-chip-inactive) { background: #eef1f5; }
 </style>

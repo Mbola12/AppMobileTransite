@@ -11,6 +11,7 @@ const pathAPI = {
         get: 'dossier/get',
         getparbl: 'dossier/getparbl',
         fetchYear: 'dossier/fetchyear',
+        dashboardsuiviebl: 'dossier/dashboardsuiviebl',
     },
     bl: {
         fetchByClientID: 'dossier/fetchbyclientid',
