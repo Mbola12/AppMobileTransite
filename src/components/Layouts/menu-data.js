@@ -7,3 +7,9 @@ export const MENUS_DATA = [
     { key: "scan_qr", title: "Scan QR", icon: "fa-solid fa-camera", color: "bg-white" },
     { key: "user", title: "Utilisateur", icon: "fa-solid fa-user", color: "bg-white" },
 ];
+
+// Types de transit affichés sur le menu principal (Menu.vue)
+export const TRANSIT_TYPES = [
+    { key: "container", icon: "fa-solid fa-cubes", color: "from-primary to-secondary" },
+    { key: "conventionnel", icon: "fa-solid fa-pallet", color: "from-orange to-yellow" },
+];

@@ -8,6 +8,7 @@ import Navire from "../views/Navire.vue";
 import Login from "../views/Login.vue";
 import User from "../views/User.vue";
 import TableauBord from "../views/TableauBord.vue";
+import MenuTransit from "../views/MenuTransit.vue";
 
 const routes = [
     {
@@ -20,6 +21,13 @@ const routes = [
         component: Main,
         name: 'Main',
         meta: { requiresAuth: true },
+    },
+    {
+        path: '/menu/:type',
+        name: 'MenuType',
+        meta: { requiresAuth: true },
+        component: MenuTransit,
+        props: true,
     },
     {
         path: '/navire',

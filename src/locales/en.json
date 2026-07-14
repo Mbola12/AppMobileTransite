@@ -9,7 +9,9 @@
     "scan_qr": "Scan QR",
     "user": "User",
     "tableau_bord": "Dashboard",
-    "a_propos": "About"
+    "a_propos": "About",
+    "container": "Container",
+    "conventionnel": "Conventional"
   },
   "filtre": {
     "search": "Search",
