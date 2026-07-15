@@ -25,7 +25,8 @@ import {
     faFilter,
     faCircleInfo,
     faCubes,
-    faPallet
+    faPallet,
+    faEye
 } from "@fortawesome/free-solid-svg-icons";
 
 import {} from '@fortawesome/free-brands-svg-icons';
@@ -57,5 +58,6 @@ library.add(
     faFilter,
     faCircleInfo,
     faCubes,
-    faPallet
+    faPallet,
+    faEye
 );

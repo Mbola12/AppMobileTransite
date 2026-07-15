@@ -27,16 +27,35 @@ const handleClose = () => {
     emit('close');
 };
 
-const show_document = (nom_piece_jointe, name) => {
-    if (!nom_piece_jointe) return;
-
+const getDocumentUrl = (nom_piece_jointe, name) => {
     const paths = {
         FACTURE: baseUrl + "/upload/dossier/facture/",
         TRESORERIE: baseUrl + "/upload/dossier/tresorerie/",
     };
 
     const sub_link = paths[name] || baseUrl + "/upload/dossier/";
-    window.open(sub_link + nom_piece_jointe, '_blank');
+    return sub_link + nom_piece_jointe;
+};
+
+const show_document = (nom_piece_jointe, name) => {
+    if (!nom_piece_jointe) return;
+    window.open(getDocumentUrl(nom_piece_jointe, name), '_blank');
+};
+
+const previewOpen = ref(false);
+const previewName = ref('');
+const previewUrl = ref('');
+
+const preview_document = (nom_piece_jointe, name) => {
+    if (!nom_piece_jointe) return;
+    previewName.value = name;
+    previewUrl.value = getDocumentUrl(nom_piece_jointe, name);
+    previewOpen.value = true;
+};
+
+const closePreview = () => {
+    previewOpen.value = false;
+    previewUrl.value = '';
 };
 
 const downloadZip = (id) => {
@@ -116,6 +135,15 @@ const debouncedSearch = debounce(() => {
                             <font-awesome-icon v-show="!(item.dossier != '' && item.dossier !=null)"  class="me-0 text-base text-red-500" icon="fa-solid fa-circle-xmark"/>
                             <font-awesome-icon v-show="(item.dossier != '' && item.dossier !=null)" class="me-0 text-base text-green-600" icon="fa-solid fa-circle-check"/>
                         </a-space>
+                        <a-tooltip :title="t('dossier_detail.voir')" placement="left">
+                            <a-button type="default"
+                                      :disabled="!(item.dossier != '' && item.dossier !=null)"
+                                      @click="preview_document(item.dossier, item.name)"
+                                      class="!text-white group bg-primary hover:bg-secondary !border-none transition duration-300">
+                                <font-awesome-icon class="me-0"
+                                                   icon="fa-solid group-hover:text-white transition-all duration-300 fa-eye"/>
+                            </a-button>
+                        </a-tooltip>
                         <a-tooltip :title="t('dossier_detail.telecharger')" placement="left">
                             <a-button type="default"
                                       :disabled="!(item.dossier != '' && item.dossier !=null)"
@@ -134,11 +162,41 @@ const debouncedSearch = debounce(() => {
             </div>
         </div>
     </a-modal>
+
+    <a-modal
+        :open="previewOpen"
+        :title="previewName"
+        @cancel="closePreview"
+        :footer="null"
+        width="80%"
+        wrap-class-name="preview-modal"
+        class="modal_preview overflow-hidden"
+    >
+        <div class="preview-container">
+            <iframe v-if="previewUrl" :src="previewUrl" class="preview-frame" title="document-preview"></iframe>
+        </div>
+    </a-modal>
 </template>
 
 <style>
 .full-modal .ant-modal {
     top: 20px;
     margin: auto;
+}
+
+.preview-modal .ant-modal {
+    top: 20px;
+    margin: auto;
+}
+
+.preview-container {
+    width: 100%;
+    height: 75vh;
+}
+
+.preview-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
 }
 </style>
