@@ -17,9 +17,13 @@ const {t} = useI18n();
 const router = useRouter();
 
 const translatedMenus = computed(() => {
-    const menus = role === "administrateur"
+    let menus = role === "administrateur"
         ? MENUS_DATA
         : MENUS_DATA.filter(menu => (menu.key === "scan_qr" || menu.key === 'Suivie'));
+
+    if (props.type === "container") {
+        menus = menus.filter(menu => menu.key !== "Dossier");
+    }
 
     return menus.map(menu => ({
         ...menu,
