@@ -38,7 +38,8 @@ const pathAPI = {
     tableaubord: {
         fetchAll: '/suivieenlevementdetail/tableaubord',
         entrepot: '/suivieenlevementdetail/fetchdistinctentrepot',
-        navire: '/suivieenlevementdetail/fetchnavire'
+        navire: '/suivieenlevementdetail/fetchnavire',
+        print: '/suivieenlevementdetail/printsuivieenlevement'
     }
 }
 

@@ -100,6 +100,7 @@
   "tableau_bord": {
     "tableau_bord": "Tableau de bord",
     "filtrer_par": "Filtrer par",
+    "imprimer": "Imprimer",
     "recherche": "Recherche",
     "reset_filtre": "Réinitialiser",
     "du": "Du",
@@ -110,6 +111,7 @@
     "tab_navire": "Navire",
     "bol": "Bill of Lading",
     "num_declration" : "N° Déclration",
+    "be": "BE",
     "tab_entrepot": "Entrepôt",
     "marque": "Marque",
     "qte_initiial": "Qte I",

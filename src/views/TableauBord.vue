@@ -76,6 +76,41 @@ const handlePageChange = (page) => {
     fetchData();
 };
 
+const isoToFrDate = (isoDate) => {
+    if (!isoDate) return '';
+    const [year, month, day] = isoDate.split('-');
+    return `${day}/${month}/${year}`;
+};
+
+const printLoading = ref(false);
+
+const printSuivieenlevement = async () => {
+    printLoading.value = true;
+    try {
+        const element = JSON.stringify({
+            date_debut: isoToFrDate(filtre.value.date_debuts),
+            date_fin: isoToFrDate(filtre.value.date_fins),
+            id_navire: filtre.value.id_navire,
+            nom_entrepot: filtre.value.nom_entrepot,
+            bill_of_lading: filtre.value.bill_of_lading,
+            colonne_critere: '',
+            filter: filtre.value.filter,
+        });
+        const formulaire = new FormData();
+        formulaire.append('element', element);
+        const response = await axiosInstance.post(pathAPI.tableaubord.print, formulaire);
+        if (response.data.success === true) {
+            window.open(response.data.file_url, '_blank');
+        } else {
+            toast.showToast({msg: response.data.message || 'Erreur lors de la génération du PDF.', type: 'error'});
+        }
+    } catch (e) {
+        toast.showToast({msg: 'Une erreur est survenue.', type: 'error'});
+    } finally {
+        printLoading.value = false;
+    }
+};
+
 // --- Tableau de bord Container (Suivi des BL) ---
 const currentYear = new Date().getFullYear();
 const filtreContainer = ref({
@@ -264,13 +299,24 @@ onMounted(() => {
             <div class="mb-6">
                 <SearchBar v-model="filtre.filter" @input="debouncedFetchNavire"/>
             </div>
-            <a-button @click="addData" class="!bg-primary !text-white hover:!bg-secondary hover:!text-white">
-                <font-awesome-icon
-                    icon="fa-solid fa-filter"
-                    class="mr-2"
-                />
-                {{t('tableau_bord.filtrer_par')}}
-            </a-button>
+            <div class="flex gap-2">
+                <a-button @click="addData" class="!bg-primary !text-white hover:!bg-secondary hover:!text-white">
+                    <font-awesome-icon
+                        icon="fa-solid fa-filter"
+                        class="mr-2"
+                    />
+                    {{t('tableau_bord.filtrer_par')}}
+                </a-button>
+
+                <a-button @click="printSuivieenlevement" :loading="printLoading" :disabled="printLoading">
+                    <font-awesome-icon
+                        v-if="!printLoading"
+                        icon="fa-solid fa-print"
+                        class="mr-2"
+                    />
+                    {{t('tableau_bord.imprimer')}}
+                </a-button>
+            </div>
 
             <perfect-scrollbar class="h-full w-full pt-2 pb-4  overflow-hidden bg-blue-50 rounded-md">
                 <div class="flex gap-1 whitespace-nowrap w-full">
@@ -281,6 +327,7 @@ onMounted(() => {
                             <th class="border border-gray-300 px-3 py-2 text-left">{{t('tableau_bord.tab_navire')}}</th>
                             <th class="border border-gray-300 px-3 py-2 text-left">{{t('tableau_bord.bol')}}</th>
                             <th class="border border-gray-300 px-3 py-2 text-left">{{t('tableau_bord.num_declration')}}</th>
+                            <th class="border border-gray-300 px-3 py-2 text-left">{{t('tableau_bord.be')}}</th>
                             <th class="border border-gray-300 px-3 py-2 text-left">
                                 {{t('tableau_bord.tab_entrepot')}}
                             </th>
@@ -317,6 +364,9 @@ onMounted(() => {
                             </td>
                             <td class="border border-gray-300 px-3 py-2 text-left">
                                 {{d.declaration_bl}}
+                            </td>
+                            <td class="border border-gray-300 px-3 py-2 text-left">
+                                {{d.be}}
                             </td>
                             <td class="border border-gray-300 px-3 py-2 text-center">
                                 {{d.nom_entrepot}}

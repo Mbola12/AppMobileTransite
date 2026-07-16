@@ -100,6 +100,7 @@
   "tableau_bord": {
     "tableau_bord": "Dashboard",
     "filtrer_par": "Filter By",
+    "imprimer": "Print",
     "recherche": "Search",
     "reset_filtre": "Reset",
     "du": "From",
@@ -110,6 +111,7 @@
     "tab_navire": "Ship",
     "bol": "Bill of Lading",
     "num_declration": "Declaration No.",
+    "be": "BE",
     "tab_entrepot": "Warehouse",
     "marque": "Brand",
     "qte_initiial": "Initial Qty",
