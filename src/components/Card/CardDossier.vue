@@ -1,6 +1,7 @@
 <script setup>
-import {computed} from 'vue';
+import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
+import RemarqueModal from "@/components/Modal/RemarqueModal.vue";
 const {t} = useI18n();
 
 const props = defineProps({
@@ -44,17 +45,43 @@ const statusLabel = computed(() => {
 });
 
 const getQteClass = (qte) => qte > 0 ? 'qte-restant' : 'qte-cloturee';
+
+const isRemarqueModalOpen = ref(false);
+
+const openRemarqueModal = () => {
+    isRemarqueModalOpen.value = true;
+};
+
+const closeRemarqueModal = () => {
+    isRemarqueModalOpen.value = false;
+};
 </script>
 
 <template>
     <a-card
+        v-bind="$attrs"
         class="w-full card_navire hover:shadow-lg transition-shadow duration-300 cursor-pointer"
         :class="[statusClass, isLiquide ? 'is_liquide' : '']"
     >
         <div class="relative p-6">
-            <span class="status-badge">
-                REP : {{ info_navire.numero_repertoire }}
-            </span>
+            <div class="status-badge-row">
+                <span class="status-badge">
+                    REP : {{ info_navire.numero_repertoire }}
+                </span>
+                <a-dropdown :trigger="['click']" placement="bottomRight" @click.stop>
+                    <a-button type="text" size="small" class="three-dot-btn" @click.stop>
+                        <font-awesome-icon icon="fa-solid fa-ellipsis-vertical"/>
+                    </a-button>
+                    <template #overlay>
+                        <a-menu @click="openRemarqueModal">
+                            <a-menu-item key="ajouter_remarque">
+                                <font-awesome-icon icon="fa-solid fa-comment-dots" class="mr-2"/>
+                                {{ t('dossier.ajouter_remarque') }}
+                            </a-menu-item>
+                        </a-menu>
+                    </template>
+                </a-dropdown>
+            </div>
 
             <div class="dossier-number pr-24">
                 {{ statusLabel }}
@@ -134,6 +161,11 @@ const getQteClass = (qte) => qte > 0 ? 'qte-restant' : 'qte-cloturee';
         </div>
     </a-card>
 
+    <RemarqueModal
+        :open="isRemarqueModalOpen"
+        :dossier-id="info_navire.id"
+        @close="closeRemarqueModal"
+    />
 </template>
 
 <style scoped>
@@ -169,17 +201,29 @@ const getQteClass = (qte) => qte > 0 ? 'qte-restant' : 'qte-cloturee';
 }
 
 /* Meme liste d'elements que CardInfoBL.vue (MA_TRANSIT) */
-.status-badge {
+.status-badge-row {
     position: absolute;
     top: 18px;
     right: 15px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    z-index: 1;
+}
+
+.status-badge {
     padding: 4px 10px;
     border-radius: 15px;
     font-size: 13px;
     color: #3a2626;
     background-color: rgba(255, 255, 255, 0.6);
     font-weight: bold;
-    z-index: 1;
+}
+
+.three-dot-btn {
+    padding: 2px 6px !important;
+    height: auto !important;
+    color: #3a2626 !important;
 }
 
 .dossier-number {

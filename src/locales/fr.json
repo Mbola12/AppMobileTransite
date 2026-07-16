@@ -31,7 +31,11 @@
     "numero_declration": "N° Déclration",
     "numero_facture": "N° Facture",
     "poids": "Poids",
-    "type_container": "Type"
+    "type_container": "Type",
+    "ajouter_remarque": "Ajouter une remarque",
+    "remarque": "Remarque",
+    "remarque_placeholder": "Saisissez votre remarque",
+    "error_remarque": "Veuillez saisir une remarque !"
   },
   "dossier_detail": {
     "list_document": "Liste des documents",

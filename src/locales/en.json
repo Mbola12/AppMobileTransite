@@ -31,7 +31,11 @@
     "numero_declration": "Declaration",
     "numero_facture": "Invoice No.",
     "poids": "Weight",
-    "type_container": "Type"
+    "type_container": "Type",
+    "ajouter_remarque": "Add a note",
+    "remarque": "Note",
+    "remarque_placeholder": "Enter your note",
+    "error_remarque": "Please enter a note!"
   },
   "dossier_detail": {
     "list_document": "List of Documents",

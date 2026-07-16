@@ -40,6 +40,10 @@ const pathAPI = {
         entrepot: '/suivieenlevementdetail/fetchdistinctentrepot',
         navire: '/suivieenlevementdetail/fetchnavire',
         print: '/suivieenlevementdetail/printsuivieenlevement'
+    },
+    notification: {
+        save: 'notification/save',
+        fetchByDossier: 'notification/fetchbydossier'
     }
 }
 
