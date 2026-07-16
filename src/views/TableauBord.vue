@@ -250,17 +250,22 @@ onMounted(() => {
                 </div>
             </div>
 
-            <div class="statut-legend mb-4 flex flex-wrap gap-2">
-                <button
-                    type="button"
-                    v-for="statut in statutLegende"
-                    :key="statut.value"
-                    class="statut-chip"
-                    :class="[statut.colorClass, { 'statut-chip-inactive': statutFiltre.indexOf(statut.value) === -1 }]"
-                    @click="toggleStatutFiltre(statut.value)"
-                >
-                    {{ statut.label }}
-                </button>
+            <div class="statut-legend-bar mb-4">
+                <span class="statut-legend-title">{{t('tableau_bord.statut_legende_titre')}}</span>
+                <div class="statut-legend-items">
+                    <button
+                        type="button"
+                        v-for="statut in statutLegende"
+                        :key="statut.value"
+                        class="statut-chip"
+                        :class="[statut.colorClass, { 'statut-chip-inactive': statutFiltre.indexOf(statut.value) === -1 }]"
+                        @click="toggleStatutFiltre(statut.value)"
+                    >
+                        <span class="statut-chip-dot"></span>
+                        {{ statut.label }}
+                        <font-awesome-icon v-if="statutFiltre.indexOf(statut.value) !== -1" icon="fa-solid fa-check" class="statut-chip-check"/>
+                    </button>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -426,6 +431,33 @@ onMounted(() => {
 }
 
 /* --- Légende / filtre de statut (Tableau de bord Container) --- */
+/* Aligné sur MA_TRANSIT/frontend/src/views/TableauBord/TableauBord.vue */
+.statut-legend-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 14px 18px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+}
+
+.statut-legend-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #6c757d;
+    white-space: nowrap;
+}
+
+.statut-legend-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
 .statut-chip {
     display: inline-flex;
     align-items: center;
@@ -441,6 +473,18 @@ onMounted(() => {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
+.statut-chip-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.statut-chip-check {
+    font-size: 11px;
+    margin-left: 2px;
+}
+
 .statut-chip-inactive {
     opacity: 0.5;
     background: white !important;
@@ -451,17 +495,32 @@ onMounted(() => {
     border-color: #a3e0b8;
     color: #1e7b3a;
 }
+.statut-cloture .statut-chip-dot { background: #2e7d32; }
 .statut-cloture:not(.statut-chip-inactive) { background: #def6e4; }
 
 .statut-en-cours {
     border-color: #a9d4f7;
     color: #17679e;
 }
+.statut-en-cours .statut-chip-dot { background: #2a99f1; }
 .statut-en-cours:not(.statut-chip-inactive) { background: rgba(42, 153, 241, 0.18); }
 
 .statut-non-cloture {
     border-color: #ced4da;
     color: #495057;
 }
+.statut-non-cloture .statut-chip-dot { background: #6c757d; }
 .statut-non-cloture:not(.statut-chip-inactive) { background: #eef1f5; }
+
+.statut-chip:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 576px) {
+    .statut-legend-bar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
 </style>

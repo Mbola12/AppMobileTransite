@@ -119,6 +119,7 @@
     "nbre_sac": "Nbre Sac",
     "nbre_bb": "Nbre BB",
     "qte_restant": "Qte Restant",
+    "statut_legende_titre": "Statut des dossiers",
     "statut_cloture": "Clôturé",
     "statut_en_cours": "En cours",
     "statut_non_cloture": "Non clôturé"
