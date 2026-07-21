@@ -51,7 +51,7 @@ const handleLogin = async () => {
 
         <a-layout-content class="!p-0 max-w-screen-2xl bg-gray-100 w-full rounded-t-3xl z-10">
             <div class="flex flex-col items-center justify-center z-10">
-                <img src="../../public/img/logo.png" alt="Logo" class="w-[50%] h-[50%] object-cover rounded-full" />
+                <img src="../../public/img/1-8-1.webp" alt="Logo" class="w-[50%] h-[50%] object-cover rounded-full" />
             </div>
             <a-card class="w-full">
                 <template #title>
