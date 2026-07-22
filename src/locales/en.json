@@ -65,6 +65,7 @@
     "voyage": "Voyage",
     "heure_depart": "Departure Time",
     "heure_dechargement": "Unloading Time",
+    "tonnage": "Tonnage",
     "num_bl": "B/L Number",
     "transporteur": "Transporter",
     "chauffeur": "Driver",

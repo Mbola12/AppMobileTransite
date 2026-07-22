@@ -29,7 +29,8 @@ import {
     faEye,
     faPrint,
     faEllipsisVertical,
-    faCommentDots
+    faCommentDots,
+    faBox
 } from "@fortawesome/free-solid-svg-icons";
 
 import {} from '@fortawesome/free-brands-svg-icons';
@@ -65,5 +66,6 @@ library.add(
     faEye,
     faPrint,
     faEllipsisVertical,
-    faCommentDots
+    faCommentDots,
+    faBox
 );

@@ -10,6 +10,6 @@ export const MENUS_DATA = [
 
 // Types de transit affichés sur le menu principal (Menu.vue)
 export const TRANSIT_TYPES = [
-    { key: "container", icon: "fa-solid fa-cubes", color: "from-primary to-secondary" },
-    { key: "conventionnel", icon: "fa-solid fa-pallet", color: "from-orange to-yellow" },
+    { key: "container", icon: "fa-solid fa-box", color: "from-primary to-secondary" },
+    { key: "conventionnel", icon: "fa-solid fa-ship", color: "from-orange to-yellow" },
 ];

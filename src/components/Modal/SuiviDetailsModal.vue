@@ -103,6 +103,11 @@ const toggle = async (item, index)=> {
     isModalVisible.value = true;
     temp_index.value = index;
 }
+
+const getTonnage = (item) => {
+    if (!item.details || !item.details.length) return 0;
+    return item.details.reduce((sum, detail) => sum + (parseFloat(detail.qte_t) || 0), 0);
+}
 </script>
 
 <template>
@@ -153,6 +158,14 @@ const toggle = async (item, index)=> {
                         'uppercase',
                         item.delivery_time != '' ? 'text-secondary ' : 'text-orange'
                     ]">{{ item.heure_dechargement }}</span>
+                </div>
+
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-black font-medium">{{t('suivie.tonnage')}}</span>
+                    <span :class="[
+                        'uppercase',
+                        item.delivery_time != '' ? 'text-secondary ' : 'text-orange'
+                    ]">{{ getTonnage(item) }}</span>
                 </div>
 
                 <div class="flex justify-between items-center mb-2">
