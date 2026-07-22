@@ -84,7 +84,8 @@
     "nbre_big_bag": "Number of Big Bags",
     "dechargement_entrepot": "Storage Location",
     "decharge": "Unloaded",
-    "error_dechargement": "The field is required!"
+    "error_dechargement": "The field is required!",
+    "telecharger_rapport": "Download report"
   },
   "user": {
     "list_user": "User List",

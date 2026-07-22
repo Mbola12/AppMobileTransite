@@ -1,5 +1,6 @@
 <script setup>
-import {ref, onMounted} from 'vue';
+import {ref, computed, onMounted} from 'vue';
+import {useRoute} from 'vue-router';
 import ButtonRetour from "../components/ButtonRetour.vue";
 import SearchBar from "../components/SearchBar.vue";
 import CardSuiv from "../components/Card/CardSuiv.vue";
@@ -10,7 +11,11 @@ import debounce from "lodash/debounce.js";
 import {useI18n} from 'vue-i18n';
 import localstorageService from "@/utils/localstorageService.js";
 import FilterDashboard from "@/components/Modal/FilterDashboard.vue";
+import toast from "@/utils/toast.js";
 const {t} = useI18n();
+
+const route = useRoute();
+const isConventionnel = computed(() => route.query.type !== 'container');
 
 const search = ref('');
 const isModalVisible = ref(false);
@@ -19,6 +24,7 @@ const elementDetails= ref([]);
 const totalItems = ref(0);
 const is_open = ref(false);
 const navires = ref([]);
+const downloadingId = ref(null);
 
 const filtre = ref({
     filter: '',
@@ -72,6 +78,24 @@ function handleModalClose() {
     selectedCardNavire.value = null;
 }
 
+async function handleDownloadReport(navire) {
+    downloadingId.value = navire.id;
+    try {
+        const formulaire = new FormData();
+        formulaire.append('id_suivie_enlevement', navire.id);
+        const response = await axiosInstance.post(pathAPI.suivieenlevement.printElement, formulaire);
+        if (response.data.success === true) {
+            window.open(response.data.file_url, '_blank');
+        } else {
+            toast.showToast({msg: response.data.message || 'Erreur lors de la génération du rapport.', type: 'error'});
+        }
+    } catch (e) {
+        toast.showToast({msg: 'Une erreur est survenue.', type: 'error'});
+    } finally {
+        downloadingId.value = null;
+    }
+}
+
 const debouncedFetchNavire = debounce(fetchAll, 300);
 const onSearch = (data)=> {
     filtre.value.date_debuts = data.fromDate;
@@ -109,9 +133,13 @@ onMounted(() => {
             <div class="grid grid-cols-1 sm:grid-cols-2 pt-6 md:grid-cols-3 lg:grid-cols-4 gap-12">
                 <CardSuiv
                     v-for="navire in navires"
+                    :key="navire.id"
                     :date="navire.date_enlevement_formatted"
                     :nom-navire="navire.nom_navire"
+                    :show-menu="isConventionnel"
+                    :download-loading="downloadingId === navire.id"
                     @click="handleCardClick(navire.id)"
+                    @download-report="handleDownloadReport(navire)"
                     :class="selectedCardNavire === navire.id ? 'border-amber-200 shadow-lg' : ''"
                     statut=""/>
             </div>

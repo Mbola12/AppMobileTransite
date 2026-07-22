@@ -84,7 +84,8 @@
     "nbre_big_bag": "Nbre Big bag",
     "dechargement_entrepot": "Lieu de stockage",
     "decharge" : "Déchargé",
-    "error_dechargement": "Le champ est requis"
+    "error_dechargement": "Le champ est requis",
+    "telecharger_rapport": "Télécharger le rapport"
   },
   "user": {
     "list_user": "Liste des utilisateurs",

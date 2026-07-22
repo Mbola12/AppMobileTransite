@@ -11,8 +11,17 @@ defineProps({
         type: String,
         required: true
     },
+    showMenu: {
+        type: Boolean,
+        default: false
+    },
+    downloadLoading: {
+        type: Boolean,
+        default: false
+    },
 });
 
+defineEmits(['download-report']);
 </script>
 
 <template>
@@ -28,6 +37,25 @@ defineProps({
             hoverable
             class="!border-none group hover:bg-gradient-to-r from-primary to-secondary relative w-full bg-white card_navire transition-all duration-300 cursor-pointer p-8 z-10"
         >
+            <a-dropdown v-if="showMenu" :trigger="['click']" placement="bottomRight" @click.stop class="card_suiv_menu">
+                <a-button
+                    type="text"
+                    size="small"
+                    class="three-dot-btn"
+                    :loading="downloadLoading"
+                    @click.stop
+                >
+                    <font-awesome-icon v-if="!downloadLoading" icon="fa-solid fa-ellipsis-vertical"/>
+                </a-button>
+                <template #overlay>
+                    <a-menu @click="$emit('download-report')">
+                        <a-menu-item key="telecharger_rapport">
+                            <font-awesome-icon icon="fa-solid fa-download" class="mr-2"/>
+                            {{ t('suivie.telecharger_rapport') }}
+                        </a-menu-item>
+                    </a-menu>
+                </template>
+            </a-dropdown>
             <a-card-meta class="w-full pt-4">
                 <template #avatar>
                     <!-- Icône avec animation -->
@@ -70,15 +98,17 @@ defineProps({
 .card_navire :deep(.ant-card-body) {
     @apply !p-0;
 }
-</style>
 
-
-<style scoped>
-.card_navire {
-    @apply relative z-10 rounded-lg shadow-md;
+.card_suiv_menu {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 20;
 }
 
-.card_navire :deep(.ant-card-body) {
-    @apply !p-0;
+.three-dot-btn {
+    padding: 2px 6px !important;
+    height: auto !important;
+    color: #3a2626 !important;
 }
 </style>
