@@ -35,7 +35,12 @@
     "ajouter_remarque": "Ajouter une remarque",
     "remarque": "Remarque",
     "remarque_placeholder": "Saisissez votre remarque",
-    "error_remarque": "Veuillez saisir une remarque !"
+    "error_remarque": "Veuillez saisir une remarque !",
+    "franchise_mictsl": "Franchise MICTSL",
+    "date_limite_mictsl": "Date limite MICTSL",
+    "franchise_compagnie": "Franchise Compagnie",
+    "date_limite": "Date Limite",
+    "document_manquant": "Manquant"
   },
   "dossier_detail": {
     "list_document": "Liste des documents",

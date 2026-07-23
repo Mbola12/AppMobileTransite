@@ -35,7 +35,12 @@
     "ajouter_remarque": "Add a note",
     "remarque": "Note",
     "remarque_placeholder": "Enter your note",
-    "error_remarque": "Please enter a note!"
+    "error_remarque": "Please enter a note!",
+    "franchise_mictsl": "MICTSL Free Time",
+    "date_limite_mictsl": "MICTSL Deadline",
+    "franchise_compagnie": "Company Free Time",
+    "date_limite": "Deadline",
+    "document_manquant": "Missing"
   },
   "dossier_detail": {
     "list_document": "List of Documents",

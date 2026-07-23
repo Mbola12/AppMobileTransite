@@ -46,6 +46,18 @@ const statusLabel = computed(() => {
 
 const getQteClass = (qte) => qte > 0 ? 'qte-restant' : 'qte-cloturee';
 
+const formatNumber = (value) => {
+    if (value == null || value === '') return '';
+    return new Intl.NumberFormat('fr-FR').format(value);
+};
+
+const plusInfo = computed(() => {
+    const infoPlus = props.info_navire?.dossier_info_plus;
+    return (infoPlus && infoPlus.length > 0) ? infoPlus[0] : {};
+});
+
+const getStatutClass = (statut) => statut ? 'statut-badge-ok' : 'statut-badge-vide';
+
 const isRemarqueModalOpen = ref(false);
 
 const openRemarqueModal = () => {
@@ -94,7 +106,7 @@ const closeRemarqueModal = () => {
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">{{ t('dossier.numero_facture') }}</span>
-                    <span class="detail-value">****</span>
+                    <span class="detail-value">{{ info_navire.ouverture_invoice }}</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">{{ t('dossier.date_creation') }}</span>
@@ -128,6 +140,22 @@ const closeRemarqueModal = () => {
                     <span class="detail-label">{{ t('dossier.numero_declration') }}</span>
                     <span class="detail-value">{{ info_navire.declaration_declaration }} {{ info_navire.declaration_date_formatted ? 'Du ' + info_navire.declaration_date_formatted : '' }}</span>
                 </div>
+                <div class="detail-row">
+                    <span class="detail-label">{{ t('dossier.franchise_mictsl') }}</span>
+                    <span class="detail-value text-bold">{{ plusInfo.franchise_mictsl }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">{{ t('dossier.date_limite_mictsl') }}</span>
+                    <span class="detail-value text-bold">{{ plusInfo.date_limit_mictsl_formatted }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">{{ t('dossier.franchise_compagnie') }}</span>
+                    <span class="detail-value text-bold">{{ plusInfo.franchise_compagnie }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">{{ t('dossier.date_limite') }}</span>
+                    <span class="detail-value text-bold">{{ plusInfo.date_limite_2_formatted }}</span>
+                </div>
             </div>
 
             <div v-if="info_navire.articles && info_navire.articles.length > 0" class="list_article">
@@ -135,7 +163,7 @@ const closeRemarqueModal = () => {
                     <span class="article-label">{{ article.reference_article }}</span>
                     <span :class="getQteClass(article.qte_restant)">
                         <font-awesome-icon v-if="article.qte_restant == 0" icon="fa-solid fa-circle-check" class="me-1"/>
-                        {{ article.qte_restant != 0 ? article.qte_restant : '' }}
+                        {{ article.qte_restant != 0 ? formatNumber(article.qte_restant) : '' }}
                     </span>
                 </div>
             </div>
@@ -152,7 +180,12 @@ const closeRemarqueModal = () => {
                     <tbody>
                         <tr v-for="(doc, index) in info_navire.document_associer" :key="index">
                             <td>{{ doc.nom_document }}</td>
-                            <td>{{ doc.statut }}</td>
+                            <td>
+                                <span class="statut-badge" :class="getStatutClass(doc.statut)">
+                                    <font-awesome-icon :icon="doc.statut ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-exclamation'"/>
+                                    {{ doc.statut ? doc.statut : t('dossier.document_manquant') }}
+                                </span>
+                            </td>
                             <td>{{ doc.date_reception }}</td>
                         </tr>
                     </tbody>
@@ -322,5 +355,28 @@ const closeRemarqueModal = () => {
 .list_document th, .list_document td {
     padding: 6px 8px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.statut-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.statut-badge-ok {
+    color: #155724;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+}
+
+.statut-badge-vide {
+    color: #dc3545;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
 }
 </style>
