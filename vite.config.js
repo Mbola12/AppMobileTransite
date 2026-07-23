@@ -1,12 +1,52 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
+import { VitePWA } from 'vite-plugin-pwa';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-    plugins: [vue()],
+    plugins: [
+        vue(),
+        VitePWA({
+            registerType: 'autoUpdate',
+            injectRegister: 'auto',
+            includeAssets: ['favicon-32x32.png', 'apple-touch-icon.png'],
+            manifest: {
+                name: 'Ma Transit',
+                short_name: 'Ma Transit',
+                description: 'Application de suivi de dossiers et navires Ma Transit',
+                start_url: '/public-client/',
+                scope: '/public-client/',
+                display: 'standalone',
+                background_color: '#ffffff',
+                theme_color: '#808080',
+                icons: [
+                    {
+                        src: 'img/pwa-192x192.png',
+                        sizes: '192x192',
+                        type: 'image/png',
+                    },
+                    {
+                        src: 'img/pwa-512x512.png',
+                        sizes: '512x512',
+                        type: 'image/png',
+                    },
+                    {
+                        src: 'img/pwa-maskable-512x512.png',
+                        sizes: '512x512',
+                        type: 'image/png',
+                        purpose: 'maskable',
+                    },
+                ],
+            },
+            workbox: {
+                globPatterns: ['**/*.{js,css,html,ico,png,svg,webp}'],
+                maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+            },
+        }),
+    ],
     base: '/public-client/', // Base URL des assets
 
     build: {
