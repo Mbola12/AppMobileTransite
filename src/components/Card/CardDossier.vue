@@ -28,19 +28,29 @@ const props = defineProps({
 });
 
 // Meme code couleur que CardInfoBL.vue (MA_TRANSIT) :
-// vert = cloture, bleu = arrivee proche (< 7 jours), gris = non cloture,
+// vert = cloture, bleu = en cours, gris = non cloture (a venir),
 // jaune = liquide (prioritaire sur les 3 autres).
 const statusClass = computed(() => {
+    // statut (etat_dossier) > 0 => Cloture
     if (Number(props.statut) > 0) return 'is_green';
-    if (props.info_navire?.etat_arrivee === 'notif3Days') return 'notif3Days';
-    return 'is_pending';
+
+    // etat_dossier <= 0 :
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const dateArrivee = new Date(props.info_navire?.ouverture_date_arriver);
+
+    // date_arrivee_navire > date_actuelle => Non cloture (a venir)
+    if (dateArrivee > today) return 'is_pending';
+
+    // date_arrivee_navire <= date_actuelle => En cours
+    return 'is_en_cours';
 });
 
 const isLiquide = computed(() => !!props.info_navire?.liquidation_date_liquidation);
 
 const statusLabel = computed(() => {
     if (statusClass.value === 'is_green') return t('tableau_bord.statut_cloture');
-    if (statusClass.value === 'notif3Days') return t('tableau_bord.statut_en_cours');
+    if (statusClass.value === 'is_en_cours') return t('tableau_bord.statut_en_cours');
     return t('tableau_bord.statut_non_cloture');
 });
 
@@ -186,7 +196,7 @@ const closeRemarqueModal = () => {
                                     {{ doc.statut ? doc.statut : t('dossier.document_manquant') }}
                                 </span>
                             </td>
-                            <td>{{ doc.date_reception }}</td>
+                            <td>{{ doc.date_reception_formatted }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -220,7 +230,7 @@ const closeRemarqueModal = () => {
     background: #def6e4;
 }
 
-.notif3Days {
+.is_en_cours {
     background: rgba(42, 153, 241, 0.42);
 }
 
