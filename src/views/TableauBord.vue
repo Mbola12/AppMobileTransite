@@ -122,7 +122,7 @@ const dossiersContainer = ref([]);
 const containerPage = ref(1);
 const containerTotalItems = ref(0);
 const containerPerPage = 25;
-const statutFiltre = ref(['en_cours', 'non_cloture']);
+const statutFiltre = ref(['en_cours', 'non_cloture', 'cloture']);
 const statutLegende = computed(() => [
     {value: 'cloture', label: t('tableau_bord.statut_cloture'), colorClass: 'statut-cloture'},
     {value: 'en_cours', label: t('tableau_bord.statut_en_cours'), colorClass: 'statut-en-cours'},

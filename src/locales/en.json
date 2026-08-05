@@ -130,7 +130,7 @@
     "nbre_sac": "Number of Bags",
     "nbre_bb": "Number of Big Bags",
     "qte_restant": "Remaining Qty",
-    "statut_legende_titre": "Folder status",
+    "statut_legende_titre": "Filter by file status:",
     "statut_cloture": "Closed",
     "statut_en_cours": "In Progress",
     "statut_non_cloture": "Not Closed"
