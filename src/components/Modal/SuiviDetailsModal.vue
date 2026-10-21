@@ -108,6 +108,12 @@ const getTonnage = (item) => {
     if (!item.details || !item.details.length) return 0;
     return item.details.reduce((sum, detail) => sum + (parseFloat(detail.qte_t) || 0), 0);
 }
+
+const getMarque = (item) => {
+    if (!item.details || !item.details.length) return '';
+    const marques = item.details.map(detail => detail.reference_article).filter(Boolean);
+    return [...new Set(marques)].join(', ');
+}
 </script>
 
 <template>
@@ -158,6 +164,14 @@ const getTonnage = (item) => {
                         'uppercase',
                         item.delivery_time != '' ? 'text-secondary ' : 'text-orange'
                     ]">{{ item.heure_dechargement }}</span>
+                </div>
+
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-black font-medium">{{t('suivie.marque')}}</span>
+                    <span :class="[
+                        'uppercase text-right',
+                        item.delivery_time != '' ? 'text-secondary ' : 'text-orange'
+                    ]">{{ getMarque(item) }}</span>
                 </div>
 
                 <div class="flex justify-between items-center mb-2">
