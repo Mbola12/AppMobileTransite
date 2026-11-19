@@ -26,6 +26,7 @@ const pathAPI = {
     suivieenlevement: {
         fetchAll: 'suivieenlevement/fetchall',
         detail: 'suivieenlevementdetail/getbysuivieenlevement',
+        detailPaginated: 'suivieenlevementdetail/getbysuivieenlevementpaginated',
         onUnloaded: 'suivieenlevementdetail/dechargement',
         printElement: 'suivieenlevementdetail/printelement'
     },

@@ -64,16 +64,65 @@ const handlePageChange = (page) => {
     fetchAll();
 };
 
-async function handleCardClick(id) {
-    const link = pathAPI.suivieenlevement.detail+"/"+id
-    const response = await axiosInstance.get(link);
-    elementDetails.value = response.data.element;
+// Détail d'un suivi chargé par lots (scroll infini) : DETAILS_PER_PAGE voyages à la fois
+const DETAILS_PER_PAGE = 50;
+const detailsPage = ref(0);
+const detailsHasMore = ref(false);
+const detailsLoading = ref(false);
+// Incrémenté à chaque ouverture/fermeture : une réponse arrivée après un changement
+// de carte est ignorée au lieu d'être ajoutée au mauvais suivi.
+let detailsRequestId = 0;
 
-    selectedCardNavire.value = id;
-    isModalVisible.value = true;
+async function fetchDetailsPage(id, page) {
+    const link = pathAPI.suivieenlevement.detailPaginated + "/" + id;
+    const response = await axiosInstance.get(link, {params: {page, per_page: DETAILS_PER_PAGE}});
+    return response.data;
+}
+
+async function handleCardClick(id) {
+    const requestId = ++detailsRequestId;
+    detailsLoading.value = true;
+    try {
+        const data = await fetchDetailsPage(id, 1);
+        if (requestId !== detailsRequestId) return;
+
+        elementDetails.value = data.element;
+        detailsPage.value = 1;
+        detailsHasMore.value = data.has_more;
+
+        selectedCardNavire.value = id;
+        isModalVisible.value = true;
+    } catch (e) {
+        console.log(e);
+    } finally {
+        if (requestId === detailsRequestId) detailsLoading.value = false;
+    }
+}
+
+async function loadMoreDetails() {
+    if (detailsLoading.value || !detailsHasMore.value || !selectedCardNavire.value) return;
+
+    const requestId = detailsRequestId;
+    const id = selectedCardNavire.value;
+    detailsLoading.value = true;
+    try {
+        const data = await fetchDetailsPage(id, detailsPage.value + 1);
+        if (requestId !== detailsRequestId) return;
+
+        elementDetails.value.push(...data.element);
+        detailsPage.value += 1;
+        detailsHasMore.value = data.has_more;
+    } catch (e) {
+        console.log(e);
+    } finally {
+        if (requestId === detailsRequestId) detailsLoading.value = false;
+    }
 }
 
 function handleModalClose() {
+    detailsRequestId++;
+    detailsLoading.value = false;
+    detailsHasMore.value = false;
     isModalVisible.value = false;
     selectedCardNavire.value = null;
 }
@@ -159,6 +208,9 @@ onMounted(() => {
                 :open="isModalVisible"
                 :navire="selectedCardNavire"
                 :elements="elementDetails"
+                :has-more="detailsHasMore"
+                :loading-more="detailsLoading"
+                @load-more="loadMoreDetails"
                 @close="handleModalClose"/>
         </a-layout-content>
 

@@ -1,5 +1,5 @@
 <script setup>
-import {defineProps, ref, watch} from 'vue';
+import {defineProps, ref, watch, computed, onBeforeUnmount} from 'vue';
 import {useI18n} from 'vue-i18n';
 import localstorageService from "@/utils/localstorageService.js";
 import pathAPI from "@/utils/pathAPI/pathAPI.js";
@@ -31,10 +31,51 @@ const props = defineProps({
     elements: {
         type: Array,
         required: true
+    },
+    // Il reste des voyages à charger côté serveur (scroll infini)
+    hasMore: {
+        type: Boolean,
+        default: false
+    },
+    // Un lot de voyages est en cours de chargement
+    loadingMore: {
+        type: Boolean,
+        default: false
     }
 });
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close', 'load-more']);
+
+// Le lot suivant est demandé dès que la carte située LOAD_MORE_BEFORE_END positions
+// avant la fin devient visible (la 45e carte sur 50, puis la 95e sur 100, ...).
+const LOAD_MORE_BEFORE_END = 5;
+const loadMoreTriggerIndex = computed(() => Math.max(props.elements.length - LOAD_MORE_BEFORE_END - 1, 0));
+
+let loadMoreObserver = null;
+let observedTrigger = null;
+
+const onTriggerVisible = (entries) => {
+    if (entries.some(entry => entry.isIntersecting) && props.hasMore && !props.loadingMore) {
+        emit('load-more');
+    }
+};
+
+// Ref de fonction posée sur la carte déclencheuse : Vue la rappelle à chaque rendu,
+// on n'observe donc que lorsque la carte déclencheuse change.
+const setLoadMoreTrigger = (el) => {
+    if (el === observedTrigger) return;
+    if (observedTrigger && loadMoreObserver) loadMoreObserver.unobserve(observedTrigger);
+    observedTrigger = el || null;
+    if (!el) return;
+    if (!loadMoreObserver) loadMoreObserver = new IntersectionObserver(onTriggerVisible);
+    loadMoreObserver.observe(el);
+};
+
+onBeforeUnmount(() => {
+    if (loadMoreObserver) loadMoreObserver.disconnect();
+    loadMoreObserver = null;
+    observedTrigger = null;
+});
 
 const handleClose = () => {
     emit('close');
@@ -127,7 +168,8 @@ const getMarque = (item) => {
         class="modal_detail overflow-hidden"
     >
 
-        <div v-for="(item, index) in elements" :key="index">
+        <div v-for="(item, index) in elements" :key="index"
+             :ref="index === loadMoreTriggerIndex ? setLoadMoreTrigger : undefined">
 
             <div class="w-full bg-white p-4 my-3 rounded-lg">
                 <a-button
@@ -268,6 +310,10 @@ const getMarque = (item) => {
 
 
             </div>
+        </div>
+
+        <div v-if="loadingMore" class="flex justify-center py-4">
+            <a-spin/>
         </div>
     </a-modal>
 
